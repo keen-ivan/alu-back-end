@@ -57,4 +57,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         main(sys.argv[1])
     else:
-        print("Usage: ./2-export_to_JSON.py <employee_id>"))
+        print("Usage: ./2-export_to_JSON.py <employee_id>")
