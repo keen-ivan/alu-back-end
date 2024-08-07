@@ -1,23 +1,52 @@
 #!/usr/bin/python3
 """
-    python script that exports data in the JSON format
+Python script that exports data in the JSON format
 """
 import json
 import requests
 
-if __name__ == "__main__":
-    url = "https://jsonplaceholder.typicode.com/"
-    users = requests.get(url + "users").json()
-    """
-        export to JSON
-    """
 
+def get_all_users():
+    """
+    Get the list of all users
+    """
+    url = "https://jsonplaceholder.typicode.com/users"
+    response = requests.get(url)
+    return response.json()
+
+
+def get_user_todos(user_id):
+    """
+    Get the TODO list for a given user ID
+    """
+    url = "https://jsonplaceholder.typicode.com/todos"
+    response = requests.get(url, params={"userId": user_id})
+    return response.json()
+
+
+def export_all_todos_to_json(users):
+    """
+    Export all users' TODO lists to a JSON file
+    """
+    data = {
+        user["id"]: [
+            {
+                "task": todo["title"],
+                "completed": todo["completed"],
+                "username": user["username"]
+            } for todo in get_user_todos(user["id"])
+        ] for user in users
+    }
     with open("todo_all_employees.json", "w") as jsonfile:
-        json.dump({
-            u.get("id"): [{
-                "task": t.get("title"),
-                "completed": t.get("completed"),
-                "username": u.get("username")
-            } for t in requests.get(url + "todos",
-                                    params={"userId": u.get("id")}).json()]
-            for u in users}, jsonfile)
+        json.dump(data, jsonfile)
+
+
+def main():
+    """
+    Main function to fetch users and their TODO lists, then export to JSON
+    """
+    users = get_all_users()
+    export_all_todos_to_json(users)
+
+if __name__ == "__main__":
+    main()
